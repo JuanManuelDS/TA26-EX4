@@ -5,11 +5,14 @@ import java.util.List;
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="equipos")
@@ -62,7 +65,9 @@ public class Equipo {
 	public void setFacultad(Facultad facultad) {
 		this.facultad = facultad;
 	}
-
+	
+	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY)
 	public List<Reserva> getReservas() {
 		return reservas;
 	}

@@ -61,6 +61,7 @@ public class Facultad {
 	}
 	
 	@JsonIgnore
+	@OneToMany(fetch = FetchType.LAZY)
 	public List<Investigador> getInvestigadores() {
 		return investigadores;
 	}
