@@ -10,5 +10,4 @@ public interface IUsuarioDAO extends JpaRepository<Usuario, Long> {
 	
 	public Usuario findByUsername(String username);
 	
-	public List<Usuario> findByRol(String rol);
 }

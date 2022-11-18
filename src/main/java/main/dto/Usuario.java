@@ -1,10 +1,17 @@
 package main.dto;
 
+import java.util.List;
+
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name="usuario")
@@ -16,17 +23,20 @@ public class Usuario {
 	
 	private String username;
 	private String password;
-	private String rol;
+
+	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY, mappedBy = "usuario")
+	private List<UsuarioRol> roles;
 	
 	public Usuario() {
 		// TODO Auto-generated constructor stub
 	}
 	
-	public Usuario(Long id, String username, String password, String rol) {
+	public Usuario(Long id, String username, String password, List<UsuarioRol> roles) {
+		super();
 		this.id = id;
 		this.username = username;
 		this.password = password;
-		this.rol = rol;
+		this.roles = roles;
 	}
 
 	public String getUsername() {
@@ -45,12 +55,13 @@ public class Usuario {
 		this.password = password;
 	}
 
-	public String getRole() {
-		return rol;
+	@JsonIgnore
+	public List<UsuarioRol> getRoles() {
+		return roles;
 	}
 
-	public void setRole(String rol) {
-		this.rol = rol;
+	public void setRoles(List<UsuarioRol> roles) {
+		this.roles = roles;
 	}
 
 	public Long getId() {
@@ -59,7 +70,7 @@ public class Usuario {
 
 	@Override
 	public String toString() {
-		return "Usuario [id=" + id + ", username=" + username + ", password=" + password + ", rol=" + rol + "]";
+		return "Usuario [id=" + id + ", username=" + username + ", password=" + password + "]";
 	}
 	
 }

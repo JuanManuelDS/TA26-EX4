@@ -1,5 +1,6 @@
 package main.controllers;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +16,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import main.dto.Rol;
 import main.dto.Usuario;
+import main.dto.UsuarioRol;
+import main.services.RolService;
+import main.services.UsuarioRolService;
 import main.services.UsuarioService;
 
 @RestController
@@ -25,6 +30,12 @@ public class UsuarioController {
 
 	@Autowired
 	UsuarioService usuarioService;
+	
+	@Autowired
+	RolService rolService;
+	
+	@Autowired
+	UsuarioRolService usuarioRolService;
 	
 	private final BCryptPasswordEncoder bCryptPasswordEncoder;
 
@@ -43,6 +54,23 @@ public class UsuarioController {
 	      .body("Response with header using ResponseEntity");
 	}
 	
+	//Retorna la lista de roles de un usuario seleccionado
+	@GetMapping("/usuarios/roles/{username}")
+	public List<Rol> listarRolesUsuario(@PathVariable(name = "username") String username) {
+
+		Usuario usuario = usuarioService.buscarUsuario(username);
+
+		List<UsuarioRol> rolesUsuario = usuarioRolService.buscarRolesUsuario(usuario);
+		List<Rol> roles = new ArrayList<>();
+		System.out.println("llego aquí");
+		rolesUsuario.forEach(rolUsuario -> {
+			System.out.println(rolUsuario.getRol());
+			roles.add(rolUsuario.getRol());
+		});
+		return roles;
+
+	}
+	
 	@GetMapping("/usuarios")
 	public List<Usuario> listasrUsuarios(){
 		return usuarioService.listarUsuarios();
@@ -59,4 +87,40 @@ public class UsuarioController {
 		return usuarioService.guardarUsuario(usuario);
 	}
 	
+	@PostMapping("/usuarios/roles")
+	public UsuarioRol agregarRolUsuario(@RequestBody RolAUsuarioForm form) {
+		System.out.println(form.getUsername());
+		Usuario usuario = usuarioService.buscarUsuario(form.getUsername());
+		Rol rol = rolService.buscarRol(form.getRoleName());
+		UsuarioRol usuarioRol = new UsuarioRol(null,usuario, rol);
+		return usuarioRolService.guardaUsuarioRol(usuarioRol);
+	}
+	
+}
+
+class RolAUsuarioForm {
+	private String username;
+	private String roleName;
+
+	public RolAUsuarioForm(String username, String roleName) {
+		this.username = username;
+		this.roleName = roleName;
+	}
+
+	public String getUsername() {
+		return username;
+	}
+
+	public void setUsername(String username) {
+		this.username = username;
+	}
+
+	public String getRoleName() {
+		return roleName;
+	}
+
+	public void setRoleName(String roleName) {
+		this.roleName = roleName;
+	}
+
 }
