@@ -87,6 +87,7 @@ public class UsuarioController {
 		return usuarioService.guardarUsuario(usuario);
 	}
 	
+	//Agrega un rol a un usuario
 	@PostMapping("/usuarios/roles")
 	public UsuarioRol agregarRolUsuario(@RequestBody RolAUsuarioForm form) {
 		System.out.println(form.getUsername());
@@ -98,6 +99,7 @@ public class UsuarioController {
 	
 }
 
+//Utilizo esta clase para el método agregarRolUsuario, para dar forma de objeto a la request
 class RolAUsuarioForm {
 	private String username;
 	private String roleName;
