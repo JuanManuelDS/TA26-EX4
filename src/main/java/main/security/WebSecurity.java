@@ -39,9 +39,13 @@ public class WebSecurity extends WebSecurityConfigurerAdapter {
 			.cors().and() // Se activa la configuración CORS con los valores por defecto
 			.csrf().disable() //Se desactiva el filtro CSRF
 			.authorizeRequests().antMatchers(HttpMethod.POST, LOGIN_URL).permitAll();// Se indica que el /login no requiere autenticación
+		
 		httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, REGISTER_URL).permitAll();//La página register tampoco
-		httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/api/usuarios/roles").permitAll() //Tampoco para agregar roles a usuarios
-			.anyRequest().authenticated().and() //Se indica que el resto de URLs sí requieran autentificación
+		
+		httpSecurity.authorizeRequests().antMatchers(HttpMethod.POST, "/api/usuarios/roles").permitAll(); //Tampoco para agregar roles a usuarios
+		
+		httpSecurity.authorizeRequests().antMatchers(HttpMethod.GET, "/api/usuarios").hasRole("ADMIN") //Le digo que solo los que tengan rol de admin podrán ver todos los usuarios	
+		.anyRequest().authenticated().and() //Se indica que el resto de URLs sí requieran autentificación
 				.addFilter(new JWTAuthenticationFilter(authenticationManager()))
 				.addFilter(new JWTAuthorizationFilter(authenticationManager()));
 	}

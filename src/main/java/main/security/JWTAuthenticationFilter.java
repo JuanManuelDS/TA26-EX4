@@ -64,12 +64,17 @@ public class JWTAuthenticationFilter extends UsernamePasswordAuthenticationFilte
 		//Retorno le usuario para el que estoy creando el token
 		User user = (User) auth.getPrincipal();
 		
+		String authorities = user.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.joining(","));
+		System.out.println("roles cuando se crea el token: " + authorities);
 		//Creo el token
 		String token = Jwts.builder()
 				.setIssuedAt(new Date()) //Agrego fecha de creación
 				.setIssuer(ISSUER_INFO) //Agrego la información del creador (puede ser el nombre de la compañía o dueño de la API
 				.setSubject(user.getUsername()) //Le agrego el usuario para poder identificarlo luego
 				.setExpiration(new Date(System.currentTimeMillis() + TOKEN_EXPIRATION_TIME)) //Seteo el tiempo de expiración del token
+				.claim("roles", authorities) //Agrego los roles del usuario al token
 				.signWith(SignatureAlgorithm.HS512, SUPER_SECRET_KEY).compact(); //Lo firmo con el algoritmo HS512
 		
 		//Devuelvo el token por cabecera "authorization":"bearer + token"

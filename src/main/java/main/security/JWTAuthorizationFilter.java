@@ -6,6 +6,9 @@ import static main.security.Constants.TOKEN_BEARER_PREFIX;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.stream.Collectors;
 
 import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
@@ -14,10 +17,14 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import main.services.UsuarioService;
 
 public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 
@@ -51,14 +58,18 @@ public class JWTAuthorizationFilter extends BasicAuthenticationFilter {
 		String token = request.getHeader(HEADER_AUTHORIZACION_KEY);
 		if (token != null) {
 			// Se procesa el token y se recupera el usuario.
-			String user = Jwts.parser()
+			Claims claims = Jwts.parser()
 						.setSigningKey(SUPER_SECRET_KEY)
 						.parseClaimsJws(token.replace(TOKEN_BEARER_PREFIX, "")) //Aquí le saco el token bearer prefix
-						.getBody()
-						.getSubject();
-
-			if (user != null) {
-				return new UsernamePasswordAuthenticationToken(user, null, new ArrayList<>());
+						.getBody();
+			//Parseo el string a una colección de GrantedAuthority
+			final Collection<? extends GrantedAuthority> authorities =
+	                Arrays.stream(claims.get("roles").toString().split(","))
+	                        .map(SimpleGrantedAuthority::new)
+	                        .collect(Collectors.toList());
+			System.out.println(authorities);
+			if (claims != null) {
+				return new UsernamePasswordAuthenticationToken(claims.getSubject(), null, authorities);
 			}
 			return null;
 		}

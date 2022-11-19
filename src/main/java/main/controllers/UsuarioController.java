@@ -3,9 +3,12 @@ package main.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -62,15 +65,12 @@ public class UsuarioController {
 
 		List<UsuarioRol> rolesUsuario = usuarioRolService.buscarRolesUsuario(usuario);
 		List<Rol> roles = new ArrayList<>();
-		System.out.println("llego aquí");
 		rolesUsuario.forEach(rolUsuario -> {
-			System.out.println(rolUsuario.getRol());
 			roles.add(rolUsuario.getRol());
 		});
 		return roles;
 
 	}
-	
 	@GetMapping("/usuarios")
 	public List<Usuario> listasrUsuarios(){
 		return usuarioService.listarUsuarios();

@@ -42,9 +42,8 @@ public class UsuarioService implements IUsuarioService, UserDetailsService {
 			// Retorno el rol
 			Rol rol = rolUsuario.getRol();
 			// Retorno el nombre del rol del usuario y lo agrego a la lista de "autoridades"
-			autoridades.add(new SimpleGrantedAuthority(rol.getName()));
+			autoridades.add(new SimpleGrantedAuthority("ROLE_" + rol.getName()));
 		});
-
 		return new User(usuario.getUsername(), usuario.getPassword(), autoridades);
 	}
 	
